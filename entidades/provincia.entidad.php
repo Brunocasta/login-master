@@ -1,6 +1,6 @@
 <?php
 
-class Localidad{
+class Provincia{
     private $idprovincia;
     private $nombre;
     
@@ -16,17 +16,16 @@ class Localidad{
 
     
     public function obtenerTodos(){
-        $aProvincias = array();
+        $aProvincias = null;
         $mysqli = new mysqli(Config::BBDD_HOST, Config::BBDD_USUARIO, Config::BBDD_CLAVE, config::BBDD_NOMBRE);
-        $sql = "SELECT 
-                idproducto,
+        $resultado = $mysqli->query("SELECT 
+                idprovincia,
                 nombre
             FROM provincias 
-            ORDER BY idprovincia DESC"; 
+            ORDER BY nombre ASC"); 
 
-            $resultado = $mysqli->query($sql);
-            if($resultado){
-                while($fila = $resultado->fetch_assoc()){
+           
+            while($fila = $resultado->fetch_assoc()){
                 $obj= new Provincia();
                 $obj->idprovincia= $fila["idprovincia"];
                 $obj->nombre= $fila["nombre"];
@@ -38,7 +37,7 @@ class Localidad{
 
         }
     }
-}
+
 
 
 ?>

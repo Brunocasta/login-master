@@ -3,6 +3,7 @@
 include_once "config.php";
 include_once "entidades/cliente.php";
 include_once "entidades/provincia.entidad.php";
+include_once "entidades/localidad.entidad.php";
 
 
 
@@ -35,9 +36,10 @@ if (isset($_GET["id"]) && $_GET["id"] > 0){
 }
 
 $provincia = new Provincia();
-$aProvincias->obtenerTodos();
-
-
+$aProvincias=$provincia->obtenerTodos();
+ 
+$localidad = new Localidad();
+$aLocalidad =$localidad->obtenerTodos();
 
 
 
