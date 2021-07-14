@@ -36,10 +36,10 @@ if (isset($_GET["id"]) && $_GET["id"] > 0){
 }
 
 $provincia = new Provincia();
-$aProvincias=$provincia->obtenerTodos();
+$aProvincias = $provincia->obtenerTodos();
  
 $localidad = new Localidad();
-$aLocalidad =$localidad->obtenerTodos();
+$aLocalidades = $localidad->obtenerPorProvincia($idProvincia);
 
 
 
@@ -126,8 +126,8 @@ include_once("header.php");
                             <label for="lstLocalidad">Localidad:</label>
                             <select name="lstLocalidad" id="lstLocalidad" class="form-control">
                                 <option value="" disabled selected>Seleccionar</option>
-                                <?php foreach ($aProvincias as $prov) : ?>
-                                    <option value="<?php echo $prov->idprovincia; ?>"><?php echo $prov->nombre; ?></option>
+                                <?php foreach ($aLocalidades as $localidad) : ?>
+                                    <option value="<?php echo $localidad->idlocalidad; ?>"><?php echo $localidad->nombre; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

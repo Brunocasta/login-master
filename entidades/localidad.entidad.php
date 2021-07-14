@@ -19,12 +19,11 @@ class Localidad{
         $aLocalidades = null;
         $mysqli = new mysqli(Config::BBDD_HOST, Config::BBDD_USUARIO, Config::BBDD_CLAVE, Config::BBDD_NOMBRE);
         $sql = "SELECT 
-            idlocalidad,
-            nombre, 
-            cod_postal
-            FROM localidades 
-            WHERE fk_idprovincia = $idProvincia
-            ORDER BY idlocalidad DESC";
+                    idlocalidad,
+                    nombre, 
+                    cod_postal
+                    FROM localidades 
+                    WHERE fk_idprovincia";
         $resultado = $mysqli->query($sql);
 
         while ($fila = $resultado->fetch_assoc()) {
