@@ -24,23 +24,22 @@ if ($_POST) {
             //Es nuevo
             $cliente->insertar();
         }
-        
     } else if (isset($_POST["btnBorrar"])) {
         $cliente->eliminar();
         header("Location: clientes.php");
     }
 }
 
-if (isset($_GET["id"]) && $_GET["id"] > 0){
+if (isset($_GET["id"]) && $_GET["id"] > 0) {
     $cliente->obtenerPorId();
 }
 
 $provincia = new Provincia();
 $aProvincias = $provincia->obtenerTodos();
- 
-$localidad = new Localidad();
-$aLocalidades = $localidad->obtenerPorProvincia($idProvincia);
 
+$localidad = new Localidad();
+$aLocalidades = $localidad->obtenerPorProvincia($localidad->nombre);
+// arreglar esto o preguntarle a toty
 
 
 include_once("header.php");
@@ -69,7 +68,7 @@ include_once("header.php");
         </div>
         <div class="col-6 form-group">
             <label for="txtCorreo">Correo:</label>
-            <input type="" class="form-control" name="txtCorreo" id="txtCorreo"  value="<?php echo $cliente->correo; ?>">
+            <input type="" class="form-control" name="txtCorreo" id="txtCorreo" value="<?php echo $cliente->correo; ?>">
         </div>
         <div class="col-6 form-group">
             <label for="txtTelefono">Teléfono:</label>
@@ -105,93 +104,119 @@ include_once("header.php");
                     <?php else : ?>
                         <option><?php echo $i; ?></option>
                     <?php endif; ?>
-                <?php endfor; ?> ?>
+                <?php endfor; ?> 
             </select>
         </div>
-    
-        
-                        <div class="col-6 form-group">
-                            <label for="lstProvincia">Provincia:</label>
-                            <select name="lstProvincia" id="lstProvincia" onchange="" class="form-control">
-                                <option value="" disabled selected>Seleccionar</option>
-                                <?php foreach($aProvincias as $provincia): ?>
-                            <?php if($provincia->idprovincia): ?>
-                                <option selected value="<?php echo $provincia->idprovincia; ?>"><?php echo $provincia->nombre; ?></option>
-                           
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-6 form-group">
-                            <label for="lstLocalidad">Localidad:</label>
-                            <select name="lstLocalidad" id="lstLocalidad" class="form-control">
-                                <option value="" disabled selected>Seleccionar</option>
-                                <?php foreach ($aLocalidades as $localidad) : ?>
-                                    <option value="<?php echo $localidad->idlocalidad; ?>"><?php echo $localidad->nombre; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-        
 
 
-    <div class="modal fade" id="modalDomicilio" tabindex="-1" role="dialog" aria-labelledby="modalDomicilioLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalDomicilioLabel">Domicilio</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-12 form-group">
-                            <label for="lstTipo">Tipo:</label>
-                            <select name="lstTipo" id="lstTipo" class="form-control">
-                                <option value="" disabled selected>Seleccionar</option>
-                                <option value="1">Personal</option>
-                                <option value="2">Laboral</option>
-                                <option value="3">Comercial</option>
-                            </select>
+        <div class="col-6 form-group">
+            <label for="lstProvincia">Provincia:</label>
+            <select name="lstProvincia" id="lstProvincia" onchange="" class="form-control">
+                <option value="" disabled selected>Seleccionar</option>
+                <?php foreach ($aProvincias as $provincia) : ?>
+                    <?php if ($provincia->idprovincia) : ?>
+                        <option selected value="<?php echo $provincia->idprovincia; ?>"><?php echo $provincia->nombre; ?></option>
+
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-6 form-group">
+            <label for="lstLocalidad">Localidad:</label>
+            <select name="lstLocalidad" id="lstLocalidad" class="form-control">
+                <option value="" disabled selected onchange="obtenerPorProvincia();">Seleccionar</option>
+            </select>
+        </div>
+
+
+
+        <div class="modal fade" id="modalDomicilio" tabindex="-1" role="dialog" aria-labelledby="modalDomicilioLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDomicilioLabel">Domicilio</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 form-group">
+                                <label for="lstTipo">Tipo:</label>
+                                <select name="lstTipo" id="lstTipo" class="form-control">
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <option value="1">Personal</option>
+                                    <option value="2">Laboral</option>
+                                    <option value="3">Comercial</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 form-group">
+                                <label for="lstProvincia">Provincia:</label>
+                                <select name="lstProvincia" id="lstProvincia" onchange="fBuscarLocalidad();" class="form-control">
+                                    <option value="" disabled selected>Seleccionar</option>
+                                    <?php foreach ($aProvincias as $prov) : ?>
+                                        <option value="<?php echo $prov->idprovincia; ?>"><?php echo $prov->nombre; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 form-group">
+                                <label for="lstLocalidad">Localidad:</label>
+                                <select name="lstLocalidad" id="lstLocalidad" class="form-control">
+                                    <option value="" disabled selected>Seleccionar</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 form-group">
+                                <label for="txtDireccion">Dirección:</label>
+                                <input type="text" name="" id="txtDireccion" class="form-control">
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12 form-group">
-                            <label for="lstProvincia">Provincia:</label>
-                            <select name="lstProvincia" id="lstProvincia" onchange="fBuscarLocalidad();" class="form-control">
-                                <option value="" disabled selected>Seleccionar</option>
-                                <?php foreach ($aProvincias as $prov) : ?>
-                                    <option value="<?php echo $prov->idprovincia; ?>"><?php echo $prov->nombre; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" onclick="fAgregarDomicilio()">Agregar</button>
                     </div>
-                    <div class="row">
-                        <div class="col-12 form-group">
-                            <label for="lstLocalidad">Localidad:</label>
-                            <select name="lstLocalidad" id="lstLocalidad" class="form-control">
-                                <option value="" disabled selected>Seleccionar</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 form-group">
-                            <label for="txtDireccion">Dirección:</label>
-                            <input type="text" name="" id="txtDireccion" class="form-control">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="fAgregarDomicilio()">Agregar</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- /.container-fluid -->
+    <!-- /.container-fluid -->
 
 </div>
+<script>
+        window.onload = function() {
+          
+
+            $("#lstLocalidad").change(function(){
+                idprovincia = $("#lstLocalidad option:selected").val();
+                $.ajax({
+                    type: "GET",
+                    url: "cliente-formulario.php?do=obtenerPorProvincia",
+                    data: {
+                        id: idlocalidad
+                    },
+                    async: true,
+                    dataType: "json",
+                    success: function(respuesta) {
+                       var localidad = json;
+                       for (i=0; i<localidad.length;i++){
+                           $("<option>",{
+                               value:localidad[i]["id"],
+                               text:localidad[i]["nombre"]
+                           }).appendTo("lstLocalidad");
+                       }
+                       $("#lstLocalidad").prop("selected","-1");
+                    }
+                });
+            });
+
+        };
+    </script>
 <!-- End of Main Content -->
 
 <?php include_once("footer.php"); ?>
