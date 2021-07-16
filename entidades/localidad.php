@@ -14,16 +14,16 @@ class Localidad{
         $this->$atributo = $valor;
         return $this;
     }
-
     public function obtenerPorProvincia($idProvincia){
         $aLocalidades = null;
         $mysqli = new mysqli(Config::BBDD_HOST, Config::BBDD_USUARIO, Config::BBDD_CLAVE, Config::BBDD_NOMBRE);
         $sql = "SELECT 
-                    idlocalidad,
-                    nombre, 
-                    cod_postal
-                    FROM localidades 
-                    WHERE fk_idprovincia";
+            idlocalidad,
+            nombre, 
+            cod_postal
+            FROM localidades 
+            WHERE fk_idprovincia = $idProvincia
+            ORDER BY nombre ASC";
         $resultado = $mysqli->query($sql);
 
         while ($fila = $resultado->fetch_assoc()) {
@@ -35,7 +35,6 @@ class Localidad{
         }
         return $aLocalidades;
     }
-
 }
 
 

@@ -2,8 +2,8 @@
 
 include_once "config.php";
 include_once "entidades/cliente.php";
-include_once "entidades/provincia.entidad.php";
-include_once "entidades/localidad.entidad.php";
+include_once "entidades/provincia.php";
+include_once "entidades/localidad.php";
 
 
 
@@ -37,9 +37,14 @@ if (isset($_GET["id"]) && $_GET["id"] > 0) {
 $provincia = new Provincia();
 $aProvincias = $provincia->obtenerTodos();
 
-$localidad = new Localidad();
-$aLocalidades = $localidad->obtenerPorProvincia($localidad->nombre);
-// arreglar esto o preguntarle a toty
+if (isset($_GET["do"]) && $_GET["do"] = "obtenerPorProvincia"){
+    $id = $_GET["id"];
+    $localidad = new Localidad();
+    $aLocalidades = $localidad->obtenerPorProvincia($id);
+    echo json_encode($aLocalidades);
+    exit;
+}
+
 
 
 include_once("header.php");
@@ -104,7 +109,7 @@ include_once("header.php");
                     <?php else : ?>
                         <option><?php echo $i; ?></option>
                     <?php endif; ?>
-                <?php endfor; ?> 
+                <?php endfor; ?>
             </select>
         </div>
 
@@ -124,13 +129,19 @@ include_once("header.php");
         <div class="col-6 form-group">
             <label for="lstLocalidad">Localidad:</label>
             <select name="lstLocalidad" id="lstLocalidad" class="form-control">
-                <option value="" disabled selected onchange="obtenerPorProvincia();">Seleccionar</option>
+                <option value="" disabled selected >Seleccionar</option>
             </select>
+        </div>
+        <div class="col-12 form-group">
+            <label for="txtDireccion">Dirección:</label>
+            <input type="text" name="" id="txtDireccion" class="form-control">
         </div>
 
 
 
-        <div class="modal fade" id="modalDomicilio" tabindex="-1" role="dialog" aria-labelledby="modalDomicilioLabel" aria-hidden="true">
+
+
+       <div class="modal fade" id="modalDomicilio" tabindex="-1" role="dialog" aria-labelledby="modalDomicilioLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -189,34 +200,35 @@ include_once("header.php");
 
 </div>
 <script>
-        window.onload = function() {
-          
+    window.onload = function() {
 
-            $("#lstLocalidad").change(function(){
-                idprovincia = $("#lstLocalidad option:selected").val();
+
+        $("#lstProvincia").change(function() {
+                idProvincia = $("#lstProvincia option:selected").val();
                 $.ajax({
                     type: "GET",
                     url: "cliente-formulario.php?do=obtenerPorProvincia",
                     data: {
-                        id: idlocalidad
+                        id: idProvincia
                     },
                     async: true,
                     dataType: "json",
                     success: function(respuesta) {
-                       var localidad = json;
-                       for (i=0; i<localidad.length;i++){
+                       
+                       var localidades = respuesta;
+                       for(i=0;i<localidades.length;i++){
                            $("<option>",{
-                               value:localidad[i]["id"],
-                               text:localidad[i]["nombre"]
-                           }).appendTo("lstLocalidad");
+                               value:localidades[i]["idlocalidad"],
+                               text:localidades[i]["nombre"]
+                           }).appendTo("#lstLocalidad");
                        }
-                       $("#lstLocalidad").prop("selected","-1");
+                       $("#lstLocalidad").prop("selectedIndex","-1");
                     }
                 });
             });
 
-        };
-    </script>
+    };
+</script>
 <!-- End of Main Content -->
 
 <?php include_once("footer.php"); ?>
