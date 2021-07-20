@@ -146,12 +146,12 @@ include_once("header.php");
             </div>
             <div class="col-6 form-group ">
                 <label for="txtPrecioUni">Precio Unitario:</label>
-                <input type="text" class="form-control" id="txtPrecioUniCurrency" value="">
+                <input type="text" class="form-control" id="txtPrecioUniCurrency" value="$"disabled>
                 <input type="hidden" class="form-control" name="txtPrecioUni" id="txtPrecioUni" value="<?php echo $venta->preciounitario; ?>">
             </div>
             <div class="col-6 form-group">
                 <label for="txtCantidad">Cantidad:</label>
-                <input type="text" class="form-control" name="txtCantidad" id="txtCantidad" value="<?php echo $venta->cantidad; ?>" onchange="fCalcularTotal();">
+                <input type="text" class="form-control" name="txtCantidad" id="txtCantidad" value="<?php echo $venta->cantidad; ?>" >
                 <span id="msgStock" class="text-danger" style="display:none;">No hay stock suficiente</span>
             </div>
 
@@ -160,7 +160,7 @@ include_once("header.php");
                 <input type="text" class="form-control" name="txtTotal" id="txtTotal" value="<?php echo $venta->total; ?>">
             </div>
 
-
+                    
             
         </div>
     </div>
@@ -192,7 +192,7 @@ include_once("header.php");
                     }
                 });
             });
-
+            
         };
     </script>
     <?php include_once("footer.php"); ?>
