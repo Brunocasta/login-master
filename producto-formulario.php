@@ -3,10 +3,10 @@ include_once "config.php";
 include_once "entidades/tipoproducto.php";
 include_once "entidades/producto.php";
 
-$pg= "Edicion de productos";
+$pg = "Edicion de productos";
 
 $tipoProducto = new TipoProducto();
-$aTipoProductos= $tipoProducto->obtenerTodos();
+$aTipoProductos = $tipoProducto->obtenerTodos();
 
 $producto = new Producto();
 $producto->cargarFormulario($_REQUEST);
@@ -14,26 +14,52 @@ $producto->cargarFormulario($_REQUEST);
 
 
 if ($_POST) {
-
     if (isset($_POST["btnGuardar"])) {
+        $nombreImagen = "";
+        if ($_FILES["imagen"]["error"] === UPLOAD_ERR_OK) {
+            $nombreRandom = date("Ymdhmsi");
+            $archivoTmp = $_FILES["imagen"]["tmp_name"];
+            $nombreArchivo = $_FILES["imagen"]["name"];
+            $extension = pathinfo($nombreArchivo, PATHINFO_EXTENSION);
+            $nombreImagen = "$nombreRandom.$extension";
+            move_uploaded_file($archivoTmp, "files/$nombreImagen");
+        }
+
         if (isset($_GET["id"]) && $_GET["id"] > 0) {
+            $productoAnt = new Producto();
+            $productoAnt->idproducto = $_GET["id"];
+            $productoAnt->obtenerPorId();
+            $imagenAnterior = $productoAnt->imagen;
+
+            //Si es una actualizacion y se sube una imagen, elimina la anterior
+            if ($_FILES["imagen"]["error"] === UPLOAD_ERR_OK) {
+                if (!$imagenAnterior != "") {
+                    unlink($imagenAnterior);
+                }
+            } else {
+                //Si no viene ninguna imagen, setea como imagen la que habia previamente
+                $nombreImagen = $imagenAnterior;
+            }
+
+            $producto->imagen = $nombreImagen;
             //Actualizo un cliente existente
             $producto->actualizar();
+            header("Location: producto-formulario.php");
         } else {
             //Es nuevo
+            $producto->imagen = $nombreImagen;
             $producto->insertar();
         }
-        
     } else if (isset($_POST["btnBorrar"])) {
         $producto->eliminar();
-        header("Location: producto-formulario.php");
+        header("Location: productos.php");
     }
 }
 
-if (isset($_GET["id"]) && $_GET["id"] > 0){
+if (isset($_GET["id"]) && $_GET["id"] > 0) {
     $producto->obtenerPorId();
 }
- 
+
 
 include_once("header.php");
 ?>
@@ -64,19 +90,19 @@ include_once("header.php");
                 <input type="text" required class="form-control" name="txtNombre" id="txtNombre" value="<?php echo $producto->nombre; ?>">
             </div>
             <div class="col-6 mt-3 form-group">
-            
+
                 <label for="txtNombre">Tipo de producto:</label>
-                                                                                                        
+
                 <select name="lstTipoProducto" id="lstTipoProducto" class="form-control selectpicker" data-live-search="true">
-                        <option value="" disabled selected>Seleccionar</option>
-                        <?php foreach($aTipoProductos as $tipoProducto): ?>
-                            <?php if($tipoProducto->idtipoproducto == $producto->fk_idtipoproducto): ?>
-                                <option selected value="<?php echo $tipoProducto->idtipoproducto; ?>"><?php echo $tipoProducto->nombre; ?></option>
-                            <?php else: ?>
-                                <option value="<?php echo $tipoProducto->idtipoproducto; ?>"><?php echo $tipoProducto->nombre; ?></option>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </select>
+                    <option value="" disabled selected>Seleccionar</option>
+                    <?php foreach ($aTipoProductos as $tipoProducto) : ?>
+                        <?php if ($tipoProducto->idtipoproducto == $producto->fk_idtipoproducto) : ?>
+                            <option selected value="<?php echo $tipoProducto->idtipoproducto; ?>"><?php echo $tipoProducto->nombre; ?></option>
+                        <?php else : ?>
+                            <option value="<?php echo $tipoProducto->idtipoproducto; ?>"><?php echo $tipoProducto->nombre; ?></option>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </select>
 
 
             </div>
@@ -86,7 +112,7 @@ include_once("header.php");
             </div>
             <div class="col-6 form-group">
                 <label for="txtPrecio">Precio:</label>
-                <input type="number" required class="form-control" name="txtPrecio" id="txtPrecio" value="<?php echo $producto->precio;?>">
+                <input type="number" required class="form-control" name="txtPrecio" id="txtPrecio" value="<?php echo $producto->precio; ?>">
             </div>
 
 
@@ -173,78 +199,76 @@ include_once("header.php");
                 </div>
             </div>
 
-
             <div class="col-6 form-group">
                 <label for="fileImagen">Imagen:</label>
-                <input type="file" required class="form-control-file" name="imagen" id="imagen "  value="<?php echo $producto->imagen; ?>">
-                <img src="files/" alt="">
+                <input type="file" class="form-control-file" name="imagen" id="imagen">
+                <img src="files/<?php echo $producto->imagen; ?>" class="img-thumbnail">
             </div>
 
 
         </div>
     </div>
     <script>
-    $(document).ready(function() {
-        var idCliente = '<?php echo isset($cliente) && $cliente->idcliente > 0 ? $cliente->idcliente : 0 ?>';
+        $(document).ready(function() {
+            var idCliente = '<?php echo isset($cliente) && $cliente->idcliente > 0 ? $cliente->idcliente : 0 ?>';
 
-        var dataTable = $('#grilla').DataTable({
-            "processing": true,
-            "serverSide": false,
-            "bFilter": false,
-            "bInfo": true,
-            "bSearchable": false,
-            "paging": false,
-            "pageLength": 25,
-            "order": [
-                [0, "asc"]
-            ],
-            "ajax": "cliente-formulario.php?do=cargarGrilla&idCliente=" + idCliente
+            var dataTable = $('#grilla').DataTable({
+                "processing": true,
+                "serverSide": false,
+                "bFilter": false,
+                "bInfo": true,
+                "bSearchable": false,
+                "paging": false,
+                "pageLength": 25,
+                "order": [
+                    [0, "asc"]
+                ],
+                "ajax": "cliente-formulario.php?do=cargarGrilla&idCliente=" + idCliente
+            });
         });
-    });
 
-    function fBuscarLocalidad() {
-        idProvincia = $("#lstProvincia option:selected").val();
-        $.ajax({
-            type: "GET",
-            url: "cliente-formulario.php?do=buscarLocalidad",
-            data: {
-                id: idprovincia
-            },
-            async: true,
-            dataType: "json",
-            success: function(respuesta) {
-                let opciones = "<option value='0' disabled selected>Seleccionar</option>";
-                const resultado = respuesta.reduce(function(acumulador, valor) {
-                    const {
-                        nombre,
-                        idlocalidad
-                    } = valor;
-                    return acumulador + `<option value="${idlocalidad}">${nombre}</option>`;
-                }, opciones);
-                $("#lstLocalidad").empty().append(resultado);
-            }
-        });
-    }
+        function fBuscarLocalidad() {
+            idProvincia = $("#lstProvincia option:selected").val();
+            $.ajax({
+                type: "GET",
+                url: "cliente-formulario.php?do=buscarLocalidad",
+                data: {
+                    id: idprovincia
+                },
+                async: true,
+                dataType: "json",
+                success: function(respuesta) {
+                    let opciones = "<option value='0' disabled selected>Seleccionar</option>";
+                    const resultado = respuesta.reduce(function(acumulador, valor) {
+                        const {
+                            nombre,
+                            idlocalidad
+                        } = valor;
+                        return acumulador + `<option value="${idlocalidad}">${nombre}</option>`;
+                    }, opciones);
+                    $("#lstLocalidad").empty().append(resultado);
+                }
+            });
+        }
 
-    function fAgregarDomicilio() {
-        var grilla = $('#grilla').DataTable();
-        grilla.row.add([
-            $("#lstTipo option:selected").text() + "<input type='hidden' name='txtTipo[]' value='" + $("#lstTipo option:selected").val() + "'>",
-            $("#lstProvincia option:selected").text() + "<input type='hidden' name='txtProvincia[]' value='" + $("#lstProvincia option:selected").val() + "'>",
-            $("#lstLocalidad option:selected").text() + "<input type='hidden' name='txtLocalidad[]' value='" + $("#lstLocalidad option:selected").val() + "'>",
-            $("#txtDireccion").val() + "<input type='hidden' name='txtDomicilio[]' value='" + $("#txtDireccion").val() + "'>"
-        ]).draw();
-        $('#modalDomicilio').modal('toggle');
-        limpiarFormulario();
-    }
+        function fAgregarDomicilio() {
+            var grilla = $('#grilla').DataTable();
+            grilla.row.add([
+                $("#lstTipo option:selected").text() + "<input type='hidden' name='txtTipo[]' value='" + $("#lstTipo option:selected").val() + "'>",
+                $("#lstProvincia option:selected").text() + "<input type='hidden' name='txtProvincia[]' value='" + $("#lstProvincia option:selected").val() + "'>",
+                $("#lstLocalidad option:selected").text() + "<input type='hidden' name='txtLocalidad[]' value='" + $("#lstLocalidad option:selected").val() + "'>",
+                $("#txtDireccion").val() + "<input type='hidden' name='txtDomicilio[]' value='" + $("#txtDireccion").val() + "'>"
+            ]).draw();
+            $('#modalDomicilio').modal('toggle');
+            limpiarFormulario();
+        }
 
-    function limpiarFormulario() {
-        $("#lstTipo").val("");
-        $("#lstProvincia").val("");
-        $("#lstLocalidad").val("");
-        $("#txtDireccion").val("");
-    }
-</script>
-  
-<?php include_once("footer.php"); ?>
+        function limpiarFormulario() {
+            $("#lstTipo").val("");
+            $("#lstProvincia").val("");
+            $("#lstLocalidad").val("");
+            $("#txtDireccion").val("");
+        }
+    </script>
 
+    <?php include_once("footer.php"); ?>

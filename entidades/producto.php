@@ -35,7 +35,7 @@ class Producto
         $this->cantidad = isset($request["txtCantidad"])? $request["txtCantidad"]: "";
         $this->precio = isset($request["txtPrecio"])? $request["txtPrecio"]: "";
         $this->descripcion = isset($request["txtDescripcion"])? $request["txtDescripcion"] : "";
-        $this->imagen = "";
+        $this->imagen ="";
         $this->fk_idtipoproducto = isset($request["lstTipoProducto"])? $request["lstTipoProducto"] : "";
     }
 

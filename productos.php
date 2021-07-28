@@ -26,25 +26,24 @@ include_once("header.php");
                     <a href="producto-formulario.php" class="btn btn-primary mr-2">Nuevo</a>
                 </div>
             </div>
-          <table class="table table-hover border">
+            <table class="table table-hover border">
             <tr>
-                <th>Imagen</th>
+                <th>Foto</th>
                 <th>Nombre</th>
                 <th>Cantidad</th>
                 <th>Precio</th>
                 <th>Acciones</th>
-
             </tr>
-
-            <?php foreach ($aProductos as $producto): ?>
+            <?php foreach ($aProductos as $produc): ?>
               <tr>
-                  <td><img src="files/<?php echo $producto->imagen; ?>" class="img-thumbnail"></td>
-                  <td><?php echo $producto->nombre; ?></td>
-                  <td><?php echo $producto->cantidad; ?></td>
-                  <td><?php echo $producto->precio; ?></td>
+                  <td><img src="files/<?php echo $produc->imagen; ?>"class="img-thumbnail"></td>
+                  <td><?php echo $produc->nombre; ?></td>
+                  <td><?php echo $produc->cantidad; ?></td>
+                  <td>$<?php echo number_format($produc->precio, 2,",","."); ?></td>
                   <td style="width: 110px;">
-                      <a href="producto-formulario.php?id=<?php echo $producto->idproducto; ?>"><i class="fas fa-search"></i></a>   
+                      <a href="producto-formulario.php?id=<?php echo $produc->idproducto; ?>"><i class="fas fa-search"></i></a>   
                   </td>
+            
               </tr>
             <?php endforeach; ?>
           </table>
