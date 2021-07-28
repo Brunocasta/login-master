@@ -11,9 +11,6 @@ $producto = new Producto();
 $producto->cargarFormulario($_REQUEST);
 
 
- 
-
-
 include_once("header.php"); 
 ?>
 
