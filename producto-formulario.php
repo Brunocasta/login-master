@@ -112,7 +112,7 @@ include_once("header.php");
             </div>
             <div class="col-6 form-group">
                 <label for="txtPrecio">Precio:</label>
-                <input type="number" required class="form-control" name="txtPrecio" id="txtPrecio" value="<?php echo $producto->precio; ?>">
+                <input type="number" required class="form-control" name="txtPrecio" id="txtPrecio" value="<?php echo number_format($producto->precio, 2,",","."); ?>">
             </div>
 
 

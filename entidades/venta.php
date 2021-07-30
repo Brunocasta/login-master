@@ -66,7 +66,15 @@ class Venta
 
             );";
 
+            $sqlUpdate = "UPDATE productos
+                SET cantidad = (SELECT cantidad from productos where idproducto  = $this->fk_idproducto) - $this->cantidad
+                WHERE idproducto = $this->fk_idproducto
+                ;";
+
         if (!$mysqli->query($sql)) {
+            printf("error en query:%s\n", $mysqli->error . " " . $sql);
+        }
+        if (!$mysqli->query($sqlUpdate)) {
             printf("error en query:%s\n", $mysqli->error . " " . $sql);
         }
         $this->idventa = $mysqli->insert_id;

@@ -25,6 +25,7 @@ if ($_POST) {
         } else {
             //Es nuevo
             $venta->insertar();
+            header("Location: venta-formulario.php");
         }
     } else if (isset($_POST["btnBorrar"])) {
         $venta->eliminar();
@@ -43,9 +44,9 @@ if (isset($_GET["do"]) && $_GET["do"] == "buscarProducto"){
 
     $precio = $producto->precio;
     $array["precio"] = $precio;
-
+    
     echo json_encode($array);
-    exit;
+    exit;  
 }
 
 
@@ -151,13 +152,13 @@ include_once("header.php");
             </div>
             <div class="col-6 form-group">
                 <label for="txtCantidad">Cantidad:</label>
-                <input type="text" class="form-control" name="txtCantidad" id="txtCantidad" value="<?php echo $venta->cantidad; ?>" >
+                <input type="number" class="form-control" name="txtCantidad" id="txtCantidad" value="<?php echo $venta->cantidad; ?>" >
                 <span id="msgStock" class="text-danger" style="display:none;">No hay stock suficiente</span>
             </div>
 
             <div class="col-6 form-group">
                 <label for="txtTotal">Total:</label>
-                <input type="text" class="form-control" name="txtTotal" id="txtTotal" value="<?php echo $venta->total; ?>">
+                <input type="text" class="form-control" name="txtTotal" id="txtTotal" value="<?php echo "$". $venta->total; ?>">
             </div>
 
                     
@@ -190,9 +191,8 @@ include_once("header.php");
                         $("#txtPrecioUniCurrency").val(strResultado);
                         $("#txtPrecioUni").val(respuesta.precio);
                     }
-                });
+                });  
             });
-            
         };
     </script>
     <?php include_once("footer.php"); ?>
